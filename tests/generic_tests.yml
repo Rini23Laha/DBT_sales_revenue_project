@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: cleaned_hubspot_campaign
+    columns:
+      - name: hubspot_id
+        tests:
+          - not_null
+          - unique
+      - name: campaign_name
+        tests:
+          - not_null
+
+  - name: cleaned_salesforce_opportunities
+    columns:
+      - name: opportunity_id
+        tests:
+          - not_null
+          - unique
+      - name: currency
+        tests:
+          - not_null
+      - name: stage
+        tests:
+          - not_null
+      - name: hubspot_id
+        tests:
+          - relationships:
+              to: ref('cleaned_hubspot_campaign')
+              field: hubspot_id
+
+  - name: enriched_opportunities_with_currency
+    columns:
+      - name: conversion_rate_to_eur
+        tests:
+          - not_null
+
+  - name: campaign_revenue
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_revenue_eur >= 0"

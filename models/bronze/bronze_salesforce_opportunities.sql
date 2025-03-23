@@ -1,0 +1,1 @@
+SELECT * FROM {{ source('landing', 'salesforce_opportunities') }}
