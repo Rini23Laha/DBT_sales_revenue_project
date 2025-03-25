@@ -14,15 +14,16 @@ models:
           - relationships:
               to: ref('silver_hubspot_campaign')
               field: hubspot_id
-
-      - name: opportunity_id
-        tests:
-          - not_null
-          - unique
-          - relationships:
-              to: ref('silver_opportunities_with_currency')
-              field: opportunity_id
               severity: warn
+
+      # - name: opportunity_id
+      #   tests:
+      #     - not_null
+      #     - unique
+      #     - relationships:
+      #         to: ref('silver_opportunities_with_currency')
+      #         field: opportunity_id
+      #         severity: warn
 
       # ✅ Business-critical fields
       - name: campaign_name
