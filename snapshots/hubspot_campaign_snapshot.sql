@@ -20,7 +20,7 @@ SELECT
   state_prospect,
   country_prospect,
   salesforce_id,
-  current_timestamp() AS close_date  -- Add dummy timestamp if not present
+  current_timestamp() AS close_date  
 FROM {{ ref('bronze_hubspot_campaign') }}
 
 {% endsnapshot %}

@@ -15,8 +15,14 @@ SELECT
     o.close_date,
     o.stage,
     o.applied_rate,
-    o.amount_eur
+    o.amount_eur,
+    is_active,
+    o.dbt_valid_from,
+    o.dbt_valid_to,
+    o.conversion_rate_to_eur
+   
+    
 
 FROM {{ ref('hubspot_campaign_snapshot') }} h
 LEFT JOIN {{ ref('silver_opportunities_with_currency') }} o
-  ON h.salesforce_id = o.hubspot_id
+  ON h.salesforce_id = o.hubspot_id where is_active = true
