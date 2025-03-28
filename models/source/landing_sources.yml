@@ -1,0 +1,57 @@
+version: 2
+
+sources: 
+  - name: landing # this is the source_name
+    database: |
+       {%- if target.name == "prod" -%} dbt_project_catalog_prod
+       {%- else -%} dbt_project_catalog
+       {%- endif -%}
+    schema: landing
+    tables:
+      - name: orders_incremental
+      - name: orders # this is the table_name
+        columns:
+          - name: id
+            tests:
+              - unique :
+                 config :
+                    severity : warn
+              - not_null :
+                  config :
+                    severity : warn
+          - name: quantity
+            tests:
+              - assert_non_negative
+          - name: unit_price
+            tests:
+              - assert_non_negative 
+      - name: products
+        columns:
+          - name: id
+            tests:
+              - unique :
+                 config :
+                    severity : warn
+              - not_null :
+                  config :
+                    severity : warn
+      - name: reviews
+        columns:
+          - name: id
+            tests:
+              - unique :
+                 config :
+                    severity : warn
+              - not_null :
+                  config :
+                    severity : warn
+      - name: users
+        columns:
+          - name: id
+            tests:
+              - unique :
+                 config :
+                    severity : warn
+              - not_null :
+                  config :
+                    severity : warn
