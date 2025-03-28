@@ -7,7 +7,17 @@ Welcome to your new dbt project!
 Try running the following commands:
 - dbt run
 - dbt test
-
+dbt_project/
+│
+├── models/                # dbt models (staging, marts, etc.)
+│   ├── staging/
+│   ├── marts/
+│
+├── snapshots/             # Optional snapshots for slowly changing dimensions
+├── macros/                # Jinja macros for reusable logic
+├── tests/                 # Custom data tests
+├── dbt_project.yml        # Project config
+└── README.md              # You're here!
 
 ### Resources:
 - Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
