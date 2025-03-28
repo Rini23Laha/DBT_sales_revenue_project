@@ -22,35 +22,28 @@ versioned_opportunities AS (
     FROM all_opportunities
 ),
 
--- Step 3: Compute valid_to for historical vs. active records
-dated_opportunities AS (
-    SELECT
-        *,
-        CASE 
-            WHEN next_valid_from IS NULL THEN TO_DATE('9999-12-31')  -- Active record
-            ELSE next_valid_from - INTERVAL '1 day'                  -- Historical record
-        END AS dbt_valid_to
-    FROM versioned_opportunities
-),
-
--- Step 4: Flag latest record (active)
+-- Step 3: Flag the latest record (active)
 ranked_opportunities AS (
     SELECT *,
         ROW_NUMBER() OVER (
             PARTITION BY opportunity_id
             ORDER BY dbt_valid_from DESC
         ) AS rn
-    FROM dated_opportunities
+    FROM versioned_opportunities
 ),
 
--- Step 5: Add is_active flag
+-- Step 4: Add is_active flag and compute correct dbt_valid_to
 flagged_opportunities AS (
     SELECT *,
-        CASE WHEN rn = 1 THEN TRUE ELSE FALSE END AS is_active
+        CASE WHEN rn = 1 THEN TRUE ELSE FALSE END AS is_active,
+        CASE 
+            WHEN rn = 1 THEN TO_DATE('9999-12-31')  -- Active record
+            ELSE dbt_valid_from                     -- dbt_valid_to = dbt_valid_from if inactive
+        END AS dbt_valid_to
     FROM ranked_opportunities
 ),
 
--- Step 6: Join with the most recent valid currency conversion rate
+-- Step 5: Join with the most recent valid currency conversion rate
 currency_lookup AS (
     SELECT
         o.*,
@@ -65,7 +58,7 @@ currency_lookup AS (
      AND c.start_date <= o.close_date
 )
 
--- Step 7: Final output with amount in EUR
+-- Step 6: Final output with amount in EUR
 SELECT
     opportunity_id,
     amount,

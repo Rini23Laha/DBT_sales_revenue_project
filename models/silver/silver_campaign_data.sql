@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     h.hubspot_id,
     h.email,
     h.campaign_name,
@@ -16,13 +16,12 @@ SELECT
     o.stage,
     o.applied_rate,
     o.amount_eur,
-    is_active,
+    o.is_active,
     o.dbt_valid_from,
     o.dbt_valid_to,
     o.conversion_rate_to_eur
-   
-    
 
 FROM {{ ref('hubspot_campaign_snapshot') }} h
 LEFT JOIN {{ ref('silver_opportunities_with_currency') }} o
-  ON h.salesforce_id = o.hubspot_id where is_active = true
+  ON h.salesforce_id = o.hubspot_id
+WHERE o.is_active = true
