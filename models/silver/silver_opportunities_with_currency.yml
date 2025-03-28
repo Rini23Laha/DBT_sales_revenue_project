@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: silver_opportunities_with_currency
+    description: Enriched opportunities with applied currency conversion rate
+
+    columns:
+      - name: conversion_rate_to_eur
+        description: "Matched currency conversion rate based on close date"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              severity: warn  # ✅ applied properly
+
+      - name: applied_rate
+        description: "Final rate (1.0 for EUR, else from conversion)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0.0001
+              severity: warn  # ✅ warning if below threshold
+
+      - name: amount_eur
+        description: "Converted amount in EUR"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              severity: warn  # ✅ revenue should never be negative

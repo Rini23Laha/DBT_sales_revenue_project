@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: silver_campaign_data
+    description: >
+      Final silver layer that joins enriched opportunities with HubSpot campaigns,
+      includes currency conversion and cleaned structure for gold layer KPIs.
+
+    columns:
+      # ✅ Schema & integrity
+      - name: hubspot_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_hubspot_campaign')
+              field: hubspot_id
+              severity: warn
+
+      # - name: opportunity_id
+      #   tests:
+      #     - not_null
+      #     - unique
+      #     - relationships:
+      #         to: ref('silver_opportunities_with_currency')
+      #         field: opportunity_id
+      #         severity: warn
+
+      # ✅ Business-critical fields
+      - name: campaign_name
+        tests: [not_null]
+
+      - name: country_prospect
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ["France", "United States"]
+              severity: warn
+
+      - name: amount
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              severity: warn
+
+      - name: amount_eur
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              severity: warn
+
+      - name: applied_rate
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0.0001
+              severity: warn

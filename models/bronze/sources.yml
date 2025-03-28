@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: landing
+    database: swapcard_project_catalog
+    schema: landing
+    tables:
+      - name: hubspot_campaign
+      - name: salesforce_opportunities
+      - name: currency_conversion
